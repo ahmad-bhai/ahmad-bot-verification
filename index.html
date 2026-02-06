@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification System</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background: #0e121a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; color: black; padding: 30px; border-radius: 20px; text-align: center; width: 85%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .id-box { background: #f1f5f9; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 14px; border: 1px dashed #0088cc; margin: 15px 0; word-break: break-all; }
+        .btn { background: #0088cc; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="status">Verifying Access...</h2>
+        <div class="id-box" id="uid-display">Checking ID...</div>
+        <div id="action-area"></div>
+    </div>
+
+    <script>
+        const webApp = window.Telegram.WebApp;
+        webApp.ready();
+        webApp.expand();
+
+        // URL se ID lena (?id=12345...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const userUID = urlParams.get('id');
+        document.getElementById('uid-display').innerText = userUID || "No ID Found";
+
+        const dbURL = "https://reactions-maker-site-default-rtdb.firebaseio.com/users.json";
+
+        if (userUID) {
+            fetch(dbURL).then(r => r.json()).then(data => {
+                let isUnlocked = false;
+                if (data) {
+                    Object.values(data).forEach(u => { if (u.id === userUID) isUnlocked = true; });
+                }
+
+                const status = document.getElementById('status');
+                const actionArea = document.getElementById('action-area');
+
+                if (isUnlocked) {
+                    status.innerText = "✅ VERIFIED";
+                    status.style.color = "green";
+                    actionArea.innerHTML = `<button class="btn" onclick="sendData()">START BOT NOW</button>`;
+                } else {
+                    status.innerText = "❌ LOCKED";
+                    status.style.color = "red";
+                    actionArea.innerHTML = `<p style="font-size:12px;">ID Not Registered. Contact @AhmadTrader3</p>`;
+                }
+            }).catch(e => {
+                document.getElementById('status').innerText = "⚠️ Server Error";
+            });
+        }
+
+        function sendData() {
+            // Ye bot ko data bhej kar window close kar dega
+            webApp.sendData("verified_ok");
+            webApp.close();
+        }
+    </script>
+</body>
+</html>
