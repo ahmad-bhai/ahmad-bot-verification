@@ -6,57 +6,41 @@
     <title>BOT PREMIUM</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #0e121a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .card { background: #1c242a; color: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; border-top: 5px solid #05c55e; }
-        .logo { width: 80px; height: 80px; margin-bottom: 10px; }
-        .btn-p { background: #05c55e; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        @keyframes heartbeat {0%{color:#ffb3b3} 35%{color: #ff1a1a} 100%{color:#ffb3b3}}
-        dialog::backdrop {background:#05c55e;opacity:.25}
+        body { background: #0e121a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #1c242a; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 400px; border-top: 5px solid #05c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #05c55e; margin-bottom: 15px; }
+        .btn-pay { background: #05c55e; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .locked { color: #ff6251; font-size: 28px; font-weight: 900; margin-bottom: 10px; }
     </style>
 </head>
 <body>
+    <div class="card">
+        <img src="premium.png" class="logo">
+        <h2 style="color:#05c55e; margin:0;">BOT PREMIUM</h2>
+        <div id="content">🔍 Checking Access...</div>
+    </div>
 
     <script>
         const webApp = window.Telegram.WebApp;
-        webApp.ready();
-        webApp.expand();
-
         const urlParams = new URLSearchParams(window.location.search);
         const userUID = urlParams.get('id');
-        const dbURL = "https://reactions-maker-site-default-rtdb.firebaseio.com/users.json";
+        const dbURL = `https://bot-premium-c2158-default-rtdb.firebaseio.com/users/${userUID}.json`;
 
         fetch(dbURL).then(r => r.json()).then(data => {
-            let found = false;
-            if (data) { Object.values(data).forEach(u => { if (u.id === userUID) found = true; }); }
-
-            if (found) {
-                // Agar ID mil gayi to auto-redirect aur close
-                window.location.href = "https://t.me/DISITS8_ID_GENERATOR_BOT?start=premium_unlocked";
+            if (data && data.status === "unlocked") {
+                document.getElementById('content').innerHTML = `
+                    <p>ID Verified. You can now subscribe.</p>
+                    <button class="btn-pay" onclick="location.href='https://t.me/DISITS8_ID_GENERATOR_BOT?start=p_self'">SUBSCRIBE NOW</button>
+                `;
             } else {
-                showLockDialog(userUID);
+                document.getElementById('content').innerHTML = `
+                    <div class="locked">LOCKED</div>
+                    <p style="font-size:11px; color:#aaa;">ID: ${userUID}</p>
+                    <p style="color:#ff6251; font-weight:bold;">CONTACT @AhmadTrader3 TO UNLOCK</p>
+                    <button onclick="webApp.close()" style="background:#444; color:white; border:none; padding:10px 20px; border-radius:8px; margin-top:15px; cursor:pointer;">CLOSE</button>
+                `;
             }
-        });
-
-        function showLockDialog(id) {
-            var html = `
-                <div class="card">
-                    <img src="premium.png" class="logo" alt="Premium">
-                    <div style="font-size:24px; font-weight:900">BOT PREMIUM</div>
-                    <div style="color:#ff6251; font-size:30px; font-weight:bold; margin:10px 0;">LOCKED</div>
-                    <div style="font-size:12px; word-break:break-all;">${id}</div>
-                    <button id="cBtn" class="btn-p">CLOSE</button>
-                    <p style="color:#ff6251; font-size:11px; margin-top:15px;">📝 CONTACT +923120883884 TO UNLOCK !!! 🔓</p>
-                    <hr style="border-color:#333">
-                    <div style="font-size:12px;">Made with <span style="color:#ff1a1a; animation:heartbeat 1.4s infinite;">♥</span> by @AhmadTrader3</div>
-                </div>`;
-            
-            var dia = document.createElement("dialog");
-            dia.style = "border:none; background:transparent; padding:0;";
-            document.body.appendChild(dia);
-            dia.innerHTML = html;
-            dia.showModal();
-            dia.querySelector("#cBtn").onclick = () => webApp.close();
-        }
+        }).catch(() => { document.getElementById('content').innerHTML = "Database Error!"; });
     </script>
 </body>
 </html>
