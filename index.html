@@ -3,44 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOT PREMIUM</title>
+    <title>Trading Signals Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #0e121a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: #1c242a; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 400px; border-top: 5px solid #05c55e; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #05c55e; margin-bottom: 15px; }
-        .btn-pay { background: #05c55e; color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        .locked { color: #ff6251; font-size: 28px; font-weight: 900; margin-bottom: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1c242a; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+
+        /* Common Box Styling */
+        .box {
+            background: #252e35;
+            border-top: 5px solid #05c55e;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .box-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #05c55e;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #323d47;
+            padding-bottom: 8px;
+            text-align: left;
+        }
+
+        /* User Info Box */
+        .user-info-flex {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .profile-pic {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #05c55e;
+            object-fit: cover;
+            background: #1c242a;
+        }
+
+        .details h2 { font-size: 17px; margin-bottom: 2px; }
+        .details p { font-size: 13px; color: #05c55e; margin-bottom: 2px; }
+        .details span { font-size: 11px; opacity: 0.7; font-family: monospace; }
+
+        /* Premium Box */
+        .premium-box { text-align: center; }
+        .logo-img { width: 80px; margin-bottom: 10px; border-radius: 50%; }
+
+        .uid-container {
+            background: #1c242a;
+            padding: 12px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #05c55e;
+            margin: 15px 0;
+            border: 1px dashed #05c55e;
+            word-break: break-all;
+            font-weight: bold;
+        }
+
+        .binance-card {
+            background: rgba(243, 186, 47, 0.1);
+            border: 1px dashed #f3ba2f;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .binance-name { color: #f3ba2f; font-size: 13px; margin-bottom: 5px; }
+        .binance-id { font-size: 24px; font-weight: bold; letter-spacing: 1px; }
+
+        .btn-unlock {
+            background: #05c55e;
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        .btn-unlock:active { transform: scale(0.97); }
+
+        #main_content { display: none; width: 100%; max-width: 400px; }
+        #lock_screen { display: none; width: 100%; max-width: 400px; }
+        
+        .loader { color: #05c55e; margin-top: 50px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <img src="premium.png" class="logo">
-        <h2 style="color:#05c55e; margin:0;">BOT PREMIUM</h2>
-        <div id="content">🔍 Checking Access...</div>
+
+    <div id="loading" class="loader">VERIFYING ACCESS...</div>
+
+    <div class="box" id="info_box" style="display: none;">
+        <div class="box-title">Telegram Information</div>
+        <div class="user-info-flex">
+            <img id="user_pic" src="https://i.ibb.co/Z69FyZ04/20251103-091451.png" class="profile-pic">
+            <div class="details">
+                <h2 id="full_name">Telegram User</h2>
+                <p id="username">@username</p>
+                <span id="tg_id">TG ID: 0000000000</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="lock_screen">
+        <div class="box premium-box">
+            <div class="box-title">Bot Premium</div>
+            <img src="https://i.ibb.co/HTB34WrY/20260128-162554.png" class="logo-img">
+            
+            <div style="background: #ef4444; color: white; font-size: 12px; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-weight: bold;">LOCKED</div>
+
+            <div class="uid-container" id="display_uid">LOADING ID...</div>
+
+            <div class="binance-card">
+                <div class="binance-name">Binance Pay (AHMAD BHAI)</div>
+                <div class="binance-id">505638805</div>
+            </div>
+
+            <a id="contact_link" href="#" class="btn-unlock">CONTACT TO UNLOCK</a>
+        </div>
+    </div>
+
+    <div id="main_content">
+        <div class="box" style="text-align: center; border-top-color: #34ace1;">
+            <div class="box-title" style="color: #34ace1;">Premium Active</div>
+            <h1 style="font-size: 2.5rem; margin: 20px 0;">WELCOME</h1>
+            <p>Your premium access is granted. Start using signals now!</p>
+            </div>
     </div>
 
     <script>
-        const webApp = window.Telegram.WebApp;
-        const urlParams = new URLSearchParams(window.location.search);
-        const userUID = urlParams.get('id');
-        const dbURL = `https://bot-premium-c2158-default-rtdb.firebaseio.com/users/${userUID}.json`;
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
+        // 1. CONFIGURATION (reactions-maker-site)
+        const dbURL = "https://reactions-maker-site-default-rtdb.firebaseio.com/users.json";
+
+        // 2. LOAD TELEGRAM DATA
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('full_name').innerText = (user.first_name + " " + (user.last_name || "")).trim();
+            document.getElementById('username').innerText = user.username ? "@" + user.username : "No Username";
+            document.getElementById('tg_id').innerText = "TG ID: " + user.id;
+            if (user.photo_url) document.getElementById('user_pic').src = user.photo_url;
+        }
+
+        // 3. UID GENERATION (20 Digits)
+        let uid = localStorage.getItem('ahmad_script_uid');
+        if (!uid) {
+            uid = Array.from({length: 20}, () => Math.floor(Math.random() * 10)).join('');
+            localStorage.setItem('ahmad_script_uid', uid);
+        }
+        document.getElementById('display_uid').innerText = uid;
+
+        // 4. CONTACT LINK
+        const msg = encodeURIComponent(`${uid} sir my payment is done unlock my premium.`);
+        document.getElementById('contact_link').href = `https://t.me/AhmadTrader3?text=${msg}`;
+
+        // 5. DATABASE VERIFICATION
         fetch(dbURL).then(r => r.json()).then(data => {
-            if (data && data.status === "unlocked") {
-                document.getElementById('content').innerHTML = `
-                    <p>ID Verified. You can now subscribe.</p>
-                    <button class="btn-pay" onclick="location.href='https://t.me/DISITS8_ID_GENERATOR_BOT?start=p_self'">SUBSCRIBE NOW</button>
-                `;
-            } else {
-                document.getElementById('content').innerHTML = `
-                    <div class="locked">LOCKED</div>
-                    <p style="font-size:11px; color:#aaa;">ID: ${userUID}</p>
-                    <p style="color:#ff6251; font-weight:bold;">CONTACT @AhmadTrader3 TO UNLOCK</p>
-                    <button onclick="webApp.close()" style="background:#444; color:white; border:none; padding:10px 20px; border-radius:8px; margin-top:15px; cursor:pointer;">CLOSE</button>
-                `;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('info_box').style.display = 'block';
+            
+            let isUnlocked = false;
+            if (data) {
+                Object.values(data).forEach(item => {
+                    if (item.id === uid) isUnlocked = true;
+                });
             }
-        }).catch(() => { document.getElementById('content').innerHTML = "Database Error!"; });
+
+            if (isUnlocked) {
+                document.getElementById('main_content').style.display = 'block';
+            } else {
+                document.getElementById('lock_screen').style.display = 'block';
+            }
+        }).catch(() => {
+            document.getElementById('loading').innerText = "Database Error! Check Connection.";
+        });
     </script>
 </body>
 </html>
